@@ -4,6 +4,9 @@
     <!--Permisos para traer cosas de internet-->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- Buscar Ubicacion -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
 
   <application
       android:name="com.hugo.moviesofmine.model.MovieApp"
@@ -13,6 +16,9 @@
       android:roundIcon="@mipmap/ic_launcher_round"
       android:supportsRtl="true"
       android:theme="@style/Theme.Evaluation">
+      <meta-data
+          android:name="com.google.android.geo.API_KEY"
+          android:value="AIzaSyDmqOe1SMoSKNedJe64IeEtqdyaptMPMC4" />
       <activity
           android:name=".view.HomeActivity"
           android:exported="true">
