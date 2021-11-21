@@ -3,11 +3,13 @@ package com.hugo.evaluation.view.fragment
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.hugo.evaluation.MoviePresenter.MoviePresenter
 import com.hugo.evaluation.R
 import com.hugo.evaluation.databinding.FragmentMapBinding
 import com.hugo.evaluation.databinding.FragmentMovieBinding
+import com.hugo.evaluation.helper.CheckNetwork
 import com.hugo.evaluation.interfaces.InterfacesMovie
 import com.hugo.evaluation.view.adapter.AdapterMovies
 import com.hugo.evaluation.view.adapter.Movie
@@ -21,14 +23,8 @@ class MovieFragment : Fragment(R.layout.fragment_movie), InterfacesMovie.MovieVi
         super.onViewCreated(view, savedInstanceState)
         mBinding = FragmentMovieBinding.bind(view)
 
-        moviePresenter= MoviePresenter(this)
+        moviePresenter= MoviePresenter(this, CheckNetwork(requireActivity()).isOnline())
         getMovie()
-//        var mlMovie: MutableList<Movie> = mutableListOf()
-//        mlMovie.add(Movie("eee","eee","eee","eee","eee","https://image.tmdb.org/t/p/w500/5hNcsnMkwU2LknLoru73c76el3z.jpg"))
-//        mlMovie.add(Movie("eee","eee","eee","eee","eee","https://image.tmdb.org/t/p/w500/5hNcsnMkwU2LknLoru73c76el3z.jpg"))
-//        mlMovie.add(Movie("eee","eee","eee","eee","eee","https://image.tmdb.org/t/p/w500/5hNcsnMkwU2LknLoru73c76el3z.jpg"))
-//        mBinding.lvMovie.adapter = AdapterMovies(this.context, R.layout.item_movie, mlMovie)
-
     }
 
     override fun showMovie(movie: MutableList<Movie>?) {
@@ -47,5 +43,9 @@ class MovieFragment : Fragment(R.layout.fragment_movie), InterfacesMovie.MovieVi
 
     override fun getMovie() {
         moviePresenter?.getMovie()
+    }
+
+    override fun showError(msg: String) {
+        Toast.makeText(this.context, msg, Toast.LENGTH_LONG).show()
     }
 }

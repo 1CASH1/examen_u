@@ -13,7 +13,24 @@ import kotlin.random.Random
 
 class MoviesRepositorio(var moviePrecenter: InterfacesMovie.MoviePrecenter): InterfacesMovie.MovieModel {
     private var link: String = "https://image.tmdb.org/t/p/w500/"
+    override fun getItemDataBase() {
+        try {
+            CoroutineScope(Dispatchers.IO).launch {
+                var db = MovieApp.database.MovieDao().getAll()
+                val mlMovies = mutableListOf<Movie>()
+                for (item in db) {
+                    mlMovies.add(Movie(item.title,item.original_language,item.popularity,item.vote_average,item.vote_count,"${item.image}" ))
+                }
+                moviePrecenter.showMovie(mlMovies)
+
+            }
+        }catch (e: Exception){
+            moviePrecenter.showError(e.toString())
+        }
+    }
+
     override fun getApi() {
+        try {
         CoroutineScope(Dispatchers.IO).launch {
             MovieApp.database.MovieDao().delete()
             var results = getMovies()
@@ -23,6 +40,9 @@ class MoviesRepositorio(var moviePrecenter: InterfacesMovie.MoviePrecenter): Int
                 MovieApp.database.MovieDao().insert(MovieEntity(Random.nextLong(),item.title,item.original_language,item.popularity,item.vote_average.toString(),item.vote_count.toString(),"${link}${item.backdrop_path}" ))
             }
             moviePrecenter.showMovie(mlMovies)
+        }
+        }catch (e: Exception){
+            moviePrecenter.showError(e.toString())
         }
     }
 

@@ -9,15 +9,18 @@ interface InterfacesMovie {
     interface MovieView{
         fun showMovie(movie: MutableList<Movie>?)
         fun getMovie()
+        fun showError(msg: String)
     }
     interface MoviePrecenter{
         fun showMovie(movie: MutableList<Movie>?)
         fun getMovie()
+        fun showError(msg: String)
     }
     interface MovieInteractor{
-        fun getApi()
+        fun getMovies()
     }
     interface MovieModel{
+        fun getItemDataBase()
         fun getApi()
         suspend fun getMovies(): JsonTMDB
         fun getCreateInstance(): Retrofit
