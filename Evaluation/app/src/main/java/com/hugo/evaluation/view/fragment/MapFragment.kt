@@ -3,6 +3,7 @@ package com.hugo.evaluation.view.fragment
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.*
 import android.os.Bundle
@@ -11,17 +12,16 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.google.android.gms.location.*
+import com.google.android.gms.location.LocationListener
 import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 import com.hugo.evaluation.R
 import com.hugo.evaluation.databinding.FragmentMapBinding
+import com.hugo.evaluation.view.service.LocationService
 import java.util.*
 
 class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, LocationListener {
@@ -56,6 +56,11 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Locatio
                     if (location == null){
                         getNetworkLocation()
                     }else{
+                        //requireActivity().startService(,Intent() tent(this, LocationService::class.java))
+
+                        ContextCompat.startForegroundService(requireActivity(),
+                            Intent(requireActivity(), LocationService::class.java)
+                        )
                         binding.tvUbicacion.text = "Lat: ${location.latitude} log ${location.longitude} \n Ciudad: " + getCityName(location.latitude, location.longitude) + ", pais"+ getcountryName(location.latitude,location.longitude)
                         var cameraUpdate: CameraUpdate = CameraUpdateFactory.newLatLngZoom(LatLng(location.latitude,location.longitude),18F)
                         mMap!!.moveCamera(cameraUpdate)
@@ -90,6 +95,9 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Locatio
             var lastLocation: Location = p0.lastLocation
             binding.tvUbicacion.text = "Lat: ${lastLocation.latitude} log ${lastLocation.longitude} \n Ciudad: " + getCityName(lastLocation.latitude, lastLocation.longitude) + ", pais"+ getcountryName(lastLocation.latitude,lastLocation.longitude)
             //mMap.mapType(GoogleMap.MAP_TYPE_NORMAL)
+
+            ContextCompat.startForegroundService(requireActivity(),
+                Intent(requireActivity(), LocationService::class.java))
         }
     }
 
