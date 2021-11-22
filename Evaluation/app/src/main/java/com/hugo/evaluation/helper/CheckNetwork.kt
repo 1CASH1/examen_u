@@ -5,8 +5,10 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.util.Log
+import javax.inject.Singleton
 
 //Se solicitan los permisos de internet para evaluar su se puede ralizar la actividades
+@Singleton
 class CheckNetwork(var context: Context) {
     fun isOnline(): Boolean {
         val connectivityManager =
