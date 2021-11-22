@@ -20,6 +20,7 @@ interface InterfacesMap {
     interface MapInteractor{
         fun getLocation()
         fun getPermision()
+        //fun getService()
     }
     interface MapModeloLocation{
         fun getLocation()
@@ -28,4 +29,5 @@ interface InterfacesMap {
     interface MapModeloPermision{
         fun getPermision()
     }
+//    interface MapModeloService
 }

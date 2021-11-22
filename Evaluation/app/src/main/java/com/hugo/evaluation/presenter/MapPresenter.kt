@@ -28,4 +28,5 @@ class MapPresenter(var mapView: InterfacesMap.MapView, activity: FragmentActivit
     override fun showError(messenger: String) {
         mapView.showError(messenger)
     }
+
 }

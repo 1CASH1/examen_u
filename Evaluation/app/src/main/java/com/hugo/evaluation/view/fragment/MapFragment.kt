@@ -1,38 +1,22 @@
 package com.hugo.evaluation.view.fragment
 
-import android.Manifest
 import android.annotation.SuppressLint
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.location.*
-import android.os.Build
 import android.os.Bundle
-import android.os.Looper
 import android.util.Log
 import android.view.View
-import android.widget.RemoteViews
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
-import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import com.google.android.gms.location.*
 import com.google.android.gms.location.LocationListener
-import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.hugo.evaluation.R
 import com.hugo.evaluation.databinding.FragmentMapBinding
-import com.hugo.evaluation.helper.Channelname
-import com.hugo.evaluation.helper.channelId
 import com.hugo.evaluation.interfaces.InterfacesMap
-import com.hugo.evaluation.presenter.MapPresenter
-import com.hugo.evaluation.view.HomeActivity
 import com.hugo.evaluation.view.service.LocationService
+import com.hugo.evaluation.presenter.MapPresenter
 import java.util.*
 
 //const val channelId = "canal_notificacion"
@@ -112,10 +96,21 @@ class MapFragment : Fragment(R.layout.fragment_map), InterfacesMap.MapView , OnM
     override fun confirmPermision(permision: Boolean) {
         if(permision){
             getLocation()
+            ContextCompat.startForegroundService(requireActivity(),
+                Intent(requireActivity(), LocationService::class.java)
+            )
         }
     }
 
     override fun showError(messenger: String) {
         Toast.makeText(this.context,messenger, Toast.LENGTH_LONG).show()
     }
+
+//    override fun getService() {
+//        mapPresenter.getPermision()
+//    }
+//
+//    override fun showPushNotification() {
+//        Toast.makeText(this.context,"yes", Toast.LENGTH_LONG).show()
+//    }
 }

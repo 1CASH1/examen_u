@@ -3,6 +3,7 @@ package com.hugo.evaluation.view.service
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
+import android.content.Context
 import android.content.Intent
 import android.location.Location
 import android.os.Build
@@ -47,13 +48,17 @@ class LocationService  : Service() {
             this, object : MyLocationListener {
                 override fun onLocationChanged(location: Location?) {
                     mLocation = location
-                    mLocation?.let {
+                    mLocation?.let {  ll ->
                         AppExecutors.instance?.networkIO()?.execute {
-                            Log.d(TAG,"onLocationChanged: Latitude ${it.latitude} , Longitude ${it.longitude}")
-                            val mLocation = com.hugo.evaluation.view.service.Location("${it.latitude}","${it.longitude}")
+                            Log.d(TAG,"onLocationChanged: Latitude ${ll.latitude} , Longitude ${ll.longitude}")
+                            val mLocation = com.hugo.evaluation.view.service.Location("${ll.latitude}","${ll.longitude}")
                             val db = FirebaseFirestore.getInstance()
                             db.collection("Location").add(mLocation)
                                 .addOnSuccessListener {  snapShot->
+                                    try {
+                                        generateNotification("Envio de Cordenadas",ll.latitude.toString(),ll.longitude.toString())
+
+                                    }catch (e: Exception){}
 
                                 }
                                 .addOnFailureListener {
@@ -65,6 +70,27 @@ class LocationService  : Service() {
                 }
             })
         return START_STICKY
+    }
+
+
+    fun generateNotification(title: String, lat:String, lon:String){
+         val channelId = "canal_notificacion"
+         val Channelname = "com.hugo.evaluation"
+        var builder = NotificationCompat.Builder(this, channelId)
+            .setSmallIcon(R.drawable.icon_map)
+            .setContentTitle(title)
+            .setContentText("lat: ${lat} y lon: ${lon}")
+            .setStyle(NotificationCompat.BigTextStyle()
+                .bigText("lat: ${lat} y lon: ${lon}"))
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+        val notificationManager = this.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            val notificationChannel = NotificationChannel(channelId, Channelname, NotificationManager.IMPORTANCE_HIGH)
+            notificationManager.createNotificationChannel(notificationChannel)
+        }
+        notificationManager.notify(0,builder.build())
+
     }
 
     override fun onBind(intent: Intent): IBinder? {
