@@ -53,7 +53,7 @@ class PhotoFragment : Fragment(R.layout.fragment_photo), InterfacePhoto.PhotoVie
 
         binding.btGaleria.setOnClickListener{getPermisionGallery()}
         binding.btCamera.setOnClickListener{getPermisionCamera()}
-//        binding.btSubir.setOnClickListener{     }
+        binding.btSubir.setOnClickListener{ photo(urls)    }
     }
 
     companion object{
@@ -70,21 +70,18 @@ class PhotoFragment : Fragment(R.layout.fragment_photo), InterfacePhoto.PhotoVie
                     val count = data!!.clipData!!.itemCount
                     if (count>0) {
                         for (i in 0 until count) {
-                            //urls.add(Imagenes(data.clipData!!.getItemAt(i).uri))
+                            urls.add(Imagenes(data.clipData!!.getItemAt(i).uri))
                         }
                     }
                 } else{
                     val imageUri = data?.data
                     urls.add(Imagenes(imageUri))
                 }
-
-                adapterGaleria.notifyDataSetChanged()
-
+                getPhoto(urls)
             } else if (requestCode == cameraRequest) {
                 val photo: Bitmap = data?.extras?.get("data") as Bitmap
-
                 urls.add(Imagenes(getImageUri(photo)))
-                adapterGaleria.notifyDataSetChanged()
+                getPhoto(urls)
             }else {
                 Toast.makeText(
                     this.context, "You haven't picked Image",
@@ -111,12 +108,18 @@ class PhotoFragment : Fragment(R.layout.fragment_photo), InterfacePhoto.PhotoVie
         return Uri.parse(path)
     }
 
-    override fun getPhoto() {
-        //photoPresenter.showPhoto(urls)
+    override fun getPhoto(images: MutableList<Imagenes>) {
+        photoPresenter.getPhoto(urls)
     }
 
     override fun showPhoto(images: MutableList<Imagenes>) {
-
+        for (item in images){
+            Log.e("PUEBB",item.uri.toString() )
+        }
+        urls = if(images.size>0) {
+            images
+        }else mutableListOf()
+        adapterGaleria.notifyDataSetChanged()
     }
 
     override fun getPermisionGallery() {
@@ -157,5 +160,9 @@ class PhotoFragment : Fragment(R.layout.fragment_photo), InterfacePhoto.PhotoVie
 
     override fun showError(messenger: String) {
         Toast.makeText(this.context, messenger, Toast.LENGTH_LONG).show()
+    }
+
+    override fun photo(images: MutableList<Imagenes>) {
+        photoPresenter.photo(images)
     }
 }

@@ -7,8 +7,8 @@ import com.hugo.evaluation.view.adapter.Imagenes
 
 class PhotoPresenter(var viewPhoto: InterfacePhoto.PhotoView, activity: FragmentActivity): InterfacePhoto.PhotoPresenter  {
     private var photoInteractor: InterfacePhoto.PhotoInteractor = PhotoInteractor(this,activity)
-    override fun getPhoto() {
-        photoInteractor.getPhoto()
+    override fun getPhoto(images: MutableList<Imagenes>) {
+        photoInteractor.getPhoto(images)
     }
 
     override fun showPhoto(images: MutableList<Imagenes>) {
@@ -29,6 +29,10 @@ class PhotoPresenter(var viewPhoto: InterfacePhoto.PhotoView, activity: Fragment
 
     override fun confirmPermisionCamera(permision: Boolean) {
         viewPhoto.confirmPermisionCamera(permision)
+    }
+
+    override fun photo(images: MutableList<Imagenes>) {
+        photoInteractor.photo(images)
     }
 
     override fun showError(messenger: String) {

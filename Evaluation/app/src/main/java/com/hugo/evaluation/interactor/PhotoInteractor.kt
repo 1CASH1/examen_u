@@ -2,15 +2,18 @@ package com.hugo.evaluation.interactor
 
 import androidx.fragment.app.FragmentActivity
 import com.hugo.evaluation.interfaces.InterfacePhoto
+import com.hugo.evaluation.model.api.PhotoUpload
 import com.hugo.evaluation.model.internal.PhotoPermision
 import com.hugo.evaluation.model.internal.PhotoPhone
+import com.hugo.evaluation.view.adapter.Imagenes
 
-class PhotoInteractor(var presenterPhoto: InterfacePhoto.PhotoPresenter,activity: FragmentActivity): InterfacePhoto.PhotoInteractor{
+class PhotoInteractor( presenterPhoto: InterfacePhoto.PhotoPresenter,activity: FragmentActivity): InterfacePhoto.PhotoInteractor{
     private val photoModel: InterfacePhoto.PhotoModel = PhotoPhone(presenterPhoto)
     private val photoPermission: InterfacePhoto.PhotoModeloPermision = PhotoPermision(presenterPhoto,activity )
+    private val photoUpload: InterfacePhoto.PhotoUploadModel = PhotoUpload(presenterPhoto )
 
-    override fun getPhoto() {
-        photoModel.getPhoto()
+    override fun getPhoto(images: MutableList<Imagenes>) {
+        photoModel.getPhoto(images)
     }
 
     override fun getPermisionGallery() {
@@ -19,6 +22,10 @@ class PhotoInteractor(var presenterPhoto: InterfacePhoto.PhotoPresenter,activity
 
     override fun getPermisionCamera() {
         photoPermission.getPermisionCamera()
+    }
+
+    override fun photo(images: MutableList<Imagenes>) {
+        photoUpload.photo(images)
     }
 
 }
