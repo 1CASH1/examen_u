@@ -12,8 +12,7 @@ import com.hugo.evaluation.view.fragment.MapFragment
 import com.hugo.evaluation.view.fragment.MovieFragment
 import com.hugo.evaluation.view.fragment.PhotoFragment
 
-class HomeActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListener
-{
+class HomeActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListener {
     private lateinit var binding: ActivityHomeBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,7 +29,10 @@ class HomeActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
             MapFragment(),
             PhotoFragment()
         )
-        binding.vp2Pager.adapter = PargerAdapter(fragmentList,this)//ViewPargerAdapter(fragmentList,supportFragmentManager)
+        binding.vp2Pager.adapter = PargerAdapter(
+            fragmentList,
+            this
+        )//ViewPargerAdapter(fragmentList,supportFragmentManager)
         binding.bnvHome.setOnItemSelectedListener(this)
         binding.vp2Pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageScrollStateChanged(state: Int) {
@@ -49,8 +51,7 @@ class HomeActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
 
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
-                if(position == 2)
-                {
+                if (position == 2) {
                     //requestPermissions()
                 }
                 binding.bnvHome.menu.getItem(position).isChecked = true
@@ -59,16 +60,16 @@ class HomeActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
-            R.id.movieFragment->{
+        when (item.itemId) {
+            R.id.movieFragment -> {
                 binding.vp2Pager.currentItem = 0
                 return true
             }
-            R.id.mapFragment->{
+            R.id.mapFragment -> {
                 binding.vp2Pager.currentItem = 1
                 return true
             }
-            R.id.photoFragment->{
+            R.id.photoFragment -> {
                 //requestPermissions()
                 binding.vp2Pager.currentItem = 2
                 return true

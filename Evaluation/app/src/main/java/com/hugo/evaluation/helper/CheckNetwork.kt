@@ -3,40 +3,52 @@ package com.hugo.evaluation.helper
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.util.Log
-import android.Manifest
-import android.content.pm.PackageManager
 import android.os.Build
-import androidx.core.content.ContextCompat.getSystemService
+import android.util.Log
 
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-
-
+//Se solicitan los permisos de internet para evaluar su se puede ralizar la actividades
 class CheckNetwork(var context: Context) {
     fun isOnline(): Boolean {
         val connectivityManager =
             context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        if (connectivityManager != null) {
-            val capabilities =
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
-                } else {
-                    TODO("VERSION.SDK_INT < M")
+        val capabilities =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                //se toma el valor del connectivity manager para verificar que se tenga red
+                connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+            } else {
+                //en caso de que la app que menor a 22 el sdk
+                return try {
+                    if (connectivityManager.activeNetworkInfo == null) {
+                        false
+                    } else {
+                        connectivityManager.activeNetworkInfo?.isConnected!!
+                    }
+                } catch (e: Exception) {
+                    false
                 }
-            if (capabilities != null) {
-                if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+            }
+        //Se evalua el objeto que verifica si se cuenta o no con el servicio de internet.
+        if (capabilities != null) {
+            //Se retorna un verdadero si existe conexon
+            //
+            //Se evalua el tipo de coneccion a la q se tiene acceso, no es necesario ya
+            //que cone que el obejto sea diferente de nullo es suficiente
+            when {
+                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> {
                     Log.i("Internet", "NetworkCapabilities.TRANSPORT_CELLULAR")
                     return true
-                } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                }
+                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> {
                     Log.i("Internet", "NetworkCapabilities.TRANSPORT_WIFI")
                     return true
-                } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
+                }
+                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> {
                     Log.i("Internet", "NetworkCapabilities.TRANSPORT_ETHERNET")
                     return true
                 }
             }
         }
+        //En caso de no existir conexion se regresa un falso
         return false
     }
 }

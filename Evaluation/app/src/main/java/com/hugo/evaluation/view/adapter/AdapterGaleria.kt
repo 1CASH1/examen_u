@@ -9,6 +9,7 @@ import android.widget.BaseAdapter
 import android.widget.ImageView
 import com.hugo.evaluation.R
 
+//adaotador para mostrar la galeria de imagenes  subir
 class AdapterGaleria(val context: Context?, val urls: List<Imagenes>) : BaseAdapter() {
 
     private lateinit var layoutInflater: LayoutInflater
@@ -32,8 +33,9 @@ class AdapterGaleria(val context: Context?, val urls: List<Imagenes>) : BaseAdap
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        var view: View =  LayoutInflater.from(parent!!.context).inflate(R.layout.item_image, parent, false)
-        var ivGvFotos :ImageView= view.findViewById(R.id.ivGvFotos)
+        var view: View =
+            LayoutInflater.from(parent!!.context).inflate(R.layout.item_image, parent, false)
+        var ivGvFotos: ImageView = view.findViewById(R.id.ivGvFotos)
         //var tvGvFotos :TextView= view.findViewById(R.id.tvGvFotos)
         //ivGvFotos.setImageResource(img[position])
         ivGvFotos.setImageURI(urls[position].uri)

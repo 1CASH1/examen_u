@@ -7,9 +7,9 @@ import com.hugo.moviesofmine.model.MovieEntity
 
 @Database(
     entities = [MovieEntity::class],
-    version =1
+    version = 1
 )
 
-abstract class MovieDB: RoomDatabase() {
+abstract class MovieDB : RoomDatabase() {
     abstract fun MovieDao(): MovieDao
 }

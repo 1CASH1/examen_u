@@ -1,7 +1,8 @@
 package com.hugo.moviesofmine.model
 
-import androidx.lifecycle.LiveData
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
 
 
 @Dao
@@ -11,7 +12,7 @@ interface MovieDao {
     suspend fun getAll(): MutableList<MovieEntity>
 
     @Insert
-    suspend fun insert(movieEntity:MovieEntity): Long
+    suspend fun insert(movieEntity: MovieEntity): Long
 
     @Query("DELETE FROM MovieEntity")
     suspend fun delete()

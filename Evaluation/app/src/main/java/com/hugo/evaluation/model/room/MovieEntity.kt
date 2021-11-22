@@ -1,6 +1,5 @@
 package com.hugo.moviesofmine.model
 
-import android.util.Log
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -13,5 +12,6 @@ data class MovieEntity(
     var popularity: String,
     var vote_average: String,
     var vote_count: String,
-    var image: String)
+    var image: String
+)
 

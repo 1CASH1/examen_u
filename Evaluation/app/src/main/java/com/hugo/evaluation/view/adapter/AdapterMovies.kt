@@ -10,9 +10,12 @@ import android.widget.TextView
 import com.hugo.evaluation.R
 import com.squareup.picasso.Picasso
 
-class AdapterMovies(var ctx: Context?, var recurses: Int, var items: List<Movie>?): ArrayAdapter<Movie>(ctx!!,recurses,
-    items!!
-){
+//adaptador para mostar la lista de peliculas
+class AdapterMovies(var ctx: Context?, var recurses: Int, var items: List<Movie>?) :
+    ArrayAdapter<Movie>(
+        ctx!!, recurses,
+        items!!
+    ) {
     override fun getCount(): Int {
         return items!!.count()
     }

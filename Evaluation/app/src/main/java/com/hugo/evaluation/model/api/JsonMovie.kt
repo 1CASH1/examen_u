@@ -1,7 +1,7 @@
 package com.hugo.evaluation.model.api
 
 import com.google.gson.annotations.SerializedName
-
+//estructura de la parte de respuesta del json que viene de la pagina que consultamos
 data class JsonMovie(
     @SerializedName("adult") var adult: Boolean,
     @SerializedName("backdrop_path") var backdrop_path: String,
@@ -16,5 +16,4 @@ data class JsonMovie(
     @SerializedName("video") var video: Boolean,
     @SerializedName("vote_average") var vote_average: Double,
     @SerializedName("vote_count") var vote_count: Int
-        ){
-}
+)
