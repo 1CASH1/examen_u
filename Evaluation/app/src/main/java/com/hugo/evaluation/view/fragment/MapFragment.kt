@@ -29,92 +29,78 @@ import com.hugo.evaluation.R
 import com.hugo.evaluation.databinding.FragmentMapBinding
 import com.hugo.evaluation.helper.Channelname
 import com.hugo.evaluation.helper.channelId
+import com.hugo.evaluation.interfaces.InterfacesMap
+import com.hugo.evaluation.presenter.MapPresenter
 import com.hugo.evaluation.view.HomeActivity
 import com.hugo.evaluation.view.service.LocationService
 import java.util.*
 
-const val channelId = "canal_notificacion"
-const val Channelname = "com.hugo.evaluation"
-class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, LocationListener {
+//const val channelId = "canal_notificacion"
+//const val Channelname = "com.hugo.evaluation"
+class MapFragment : Fragment(R.layout.fragment_map), InterfacesMap.MapView , OnMapReadyCallback, LocationListener {
 
+    private lateinit var mapPresenter: InterfacesMap.MapPrecenter
     private lateinit var binding: FragmentMapBinding
-    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    private lateinit var locationRequest: LocationRequest
+
+
     private var PERMISION_MAP = 1101
     private lateinit var mMap: GoogleMap
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentMapBinding.bind(view)
+        mapPresenter = MapPresenter(this,requireActivity())
+
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+
         binding.btBuscar.setOnClickListener{
             getLastLocation()
-            generateNotification("Local","Local")
-
-
-
+            //generateNotification("Local","Local")
         }
     }
 
 
 
-    fun getRemoteView(title: String, msg: String): RemoteViews {
-        val remoteView = RemoteViews("com.hugo.evaluation",R.layout.item_messaging)
-        remoteView.setTextViewText(R.id.tvTitleMessaging,title)
-        remoteView.setTextViewText(R.id.tvMessaging,msg)
-        remoteView.setImageViewResource(R.id.ivImagenMessaging,R.drawable.icon_map)
-
-        return remoteView
-    }
-
-    fun generateNotification(title: String, msg:String){
-        val intent = Intent(requireActivity(), HomeActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        val pIntent = PendingIntent.getActivity(requireActivity(),0,intent,PendingIntent.FLAG_ONE_SHOT)
-
-        var  builder: NotificationCompat.Builder = NotificationCompat.Builder(requireActivity(),channelId)
-            .setSmallIcon(R.drawable.icon_map)
-            .setAutoCancel(true)
-            .setVibrate(longArrayOf(1000,1000,1000,1000))
-            .setOnlyAlertOnce(true)
-            .setContentIntent(pIntent)
-
-        builder = builder.setContent(getRemoteView(title,msg))
-        val notificationManager = requireActivity().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            val notificationChannel = NotificationChannel(channelId, Channelname, NotificationManager.IMPORTANCE_HIGH)
-            notificationManager.createNotificationChannel(notificationChannel)
-        }
-        notificationManager.notify(0,builder.build())
-
-    }
+//    fun getRemoteView(title: String, msg: String): RemoteViews {
+//        val remoteView = RemoteViews("com.hugo.evaluation",R.layout.item_messaging)
+//        remoteView.setTextViewText(R.id.tvTitleMessaging,title)
+//        remoteView.setTextViewText(R.id.tvMessaging,msg)
+//        remoteView.setImageViewResource(R.id.ivImagenMessaging,R.drawable.icon_map)
+//
+//        return remoteView
+//    }
+//
+//    fun generateNotification(title: String, msg:String){
+//        val intent = Intent(requireActivity(), HomeActivity::class.java)
+//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+//        val pIntent = PendingIntent.getActivity(requireActivity(),0,intent,PendingIntent.FLAG_ONE_SHOT)
+//
+//        var  builder: NotificationCompat.Builder = NotificationCompat.Builder(requireActivity(),channelId)
+//            .setSmallIcon(R.drawable.icon_map)
+//            .setAutoCancel(true)
+//            .setVibrate(longArrayOf(1000,1000,1000,1000))
+//            .setOnlyAlertOnce(true)
+//            .setContentIntent(pIntent)
+//
+//        builder = builder.setContent(getRemoteView(title,msg))
+//        val notificationManager = requireActivity().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+//
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+//            val notificationChannel = NotificationChannel(channelId, Channelname, NotificationManager.IMPORTANCE_HIGH)
+//            notificationManager.createNotificationChannel(notificationChannel)
+//        }
+//        notificationManager.notify(0,builder.build())
+//
+//    }
 
     @SuppressLint("MissingPermission")
     private fun getLastLocation(){
         if(checkPermision()){
             if (isLocationEnable()){
-                fusedLocationProviderClient.lastLocation.addOnCompleteListener{ task->
-                    var location: Location? = task.result
-                    if (location == null){
-                        getNetworkLocation()
-                    }else{
-                        //requireActivity().startService(,Intent() tent(this, LocationService::class.java))
-
-                        ContextCompat.startForegroundService(requireActivity(),
-                            Intent(requireActivity(), LocationService::class.java)
-                        )
-                        binding.tvUbicacion.text = "Lat: ${location.latitude} log ${location.longitude} \n Ciudad: " + getCityName(location.latitude, location.longitude) + ", pais"+ getcountryName(location.latitude,location.longitude)
-                        var cameraUpdate: CameraUpdate = CameraUpdateFactory.newLatLngZoom(LatLng(location.latitude,location.longitude),18F)
-                        mMap!!.moveCamera(cameraUpdate)
-                        mMap!!.mapType = GoogleMap.MAP_TYPE_NORMAL
-                    }
-                }
-
+                getLocation()
             }else{
                 Toast.makeText(this.context,"Activa tu servicio de Ubicacion por Favor", Toast.LENGTH_LONG).show()
             }
@@ -124,18 +110,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Locatio
         }
     }
 
-    @SuppressLint("MissingPermission")
-    private fun getNetworkLocation(){
-        locationRequest = LocationRequest()
-        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        locationRequest.interval = 0
-        locationRequest.fastestInterval = 0
-        locationRequest.numUpdates = 2
-        fusedLocationProviderClient!!.requestLocationUpdates(
-            locationRequest,locationCallback, Looper.myLooper()
-
-        )
-    }
 
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(p0: LocationResult) {
@@ -213,5 +187,15 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Locatio
     override fun onLocationChanged(location: Location) {
         Log.d("TAG", String.format("Nueva ubicación: (%s, %s)",location?.getLatitude(), location?.getLongitude()));
 
+    }
+
+    override fun getLocation() {
+        mapPresenter.getLocation()
+    }
+
+    override fun showLocatio(location:Location) {
+        var cameraUpdate: CameraUpdate = CameraUpdateFactory.newLatLngZoom(LatLng(location.latitude,location.longitude),18F)
+        mMap!!.moveCamera(cameraUpdate)
+        mMap!!.mapType = GoogleMap.MAP_TYPE_NORMAL
     }
 }

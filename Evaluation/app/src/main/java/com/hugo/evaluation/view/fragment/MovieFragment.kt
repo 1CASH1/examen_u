@@ -1,19 +1,16 @@
 package com.hugo.evaluation.view.fragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.hugo.evaluation.MoviePresenter.MoviePresenter
+import com.hugo.evaluation.presenter.MoviePresenter
 import com.hugo.evaluation.R
-import com.hugo.evaluation.databinding.FragmentMapBinding
 import com.hugo.evaluation.databinding.FragmentMovieBinding
 import com.hugo.evaluation.helper.CheckNetwork
 import com.hugo.evaluation.interfaces.InterfacesMovie
 import com.hugo.evaluation.view.adapter.AdapterMovies
 import com.hugo.evaluation.view.adapter.Movie
-import java.nio.channels.MulticastChannel
 
 class MovieFragment : Fragment(R.layout.fragment_movie), InterfacesMovie.MovieView {
     private lateinit var mBinding: FragmentMovieBinding

@@ -1,4 +1,4 @@
-package com.hugo.evaluation.MoviePresenter
+package com.hugo.evaluation.presenter
 
 import com.hugo.evaluation.interactor.MovieInteractor
 import com.hugo.evaluation.interfaces.InterfacesMovie
