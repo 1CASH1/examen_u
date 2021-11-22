@@ -5,4 +5,5 @@
     <dimen name="common_space">8dp</dimen>
     <dimen name="width_box_min">120dp</dimen>
     <dimen name="width_box_med">130dp</dimen>
+    <dimen name="title_msg">25sp</dimen>
 </resources>

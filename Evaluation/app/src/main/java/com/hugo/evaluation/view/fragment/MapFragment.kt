@@ -2,16 +2,22 @@ package com.hugo.evaluation.view.fragment
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.*
+import android.os.Build
 import android.os.Bundle
 import android.os.Looper
 import android.util.Log
 import android.view.View
+import android.widget.RemoteViews
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.android.gms.location.*
@@ -21,9 +27,14 @@ import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.hugo.evaluation.R
 import com.hugo.evaluation.databinding.FragmentMapBinding
+import com.hugo.evaluation.helper.Channelname
+import com.hugo.evaluation.helper.channelId
+import com.hugo.evaluation.view.HomeActivity
 import com.hugo.evaluation.view.service.LocationService
 import java.util.*
 
+const val channelId = "canal_notificacion"
+const val Channelname = "com.hugo.evaluation"
 class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, LocationListener {
 
     private lateinit var binding: FragmentMapBinding
@@ -42,10 +53,46 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Locatio
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
         binding.btBuscar.setOnClickListener{
             getLastLocation()
+            generateNotification("Local","Local")
+
+
 
         }
     }
 
+
+
+    fun getRemoteView(title: String, msg: String): RemoteViews {
+        val remoteView = RemoteViews("com.hugo.evaluation",R.layout.item_messaging)
+        remoteView.setTextViewText(R.id.tvTitleMessaging,title)
+        remoteView.setTextViewText(R.id.tvMessaging,msg)
+        remoteView.setImageViewResource(R.id.ivImagenMessaging,R.drawable.icon_map)
+
+        return remoteView
+    }
+
+    fun generateNotification(title: String, msg:String){
+        val intent = Intent(requireActivity(), HomeActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        val pIntent = PendingIntent.getActivity(requireActivity(),0,intent,PendingIntent.FLAG_ONE_SHOT)
+
+        var  builder: NotificationCompat.Builder = NotificationCompat.Builder(requireActivity(),channelId)
+            .setSmallIcon(R.drawable.icon_map)
+            .setAutoCancel(true)
+            .setVibrate(longArrayOf(1000,1000,1000,1000))
+            .setOnlyAlertOnce(true)
+            .setContentIntent(pIntent)
+
+        builder = builder.setContent(getRemoteView(title,msg))
+        val notificationManager = requireActivity().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            val notificationChannel = NotificationChannel(channelId, Channelname, NotificationManager.IMPORTANCE_HIGH)
+            notificationManager.createNotificationChannel(notificationChannel)
+        }
+        notificationManager.notify(0,builder.build())
+
+    }
 
     @SuppressLint("MissingPermission")
     private fun getLastLocation(){
