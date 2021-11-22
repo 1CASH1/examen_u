@@ -11,7 +11,7 @@ import com.google.android.gms.location.*
 import com.hugo.evaluation.interfaces.InterfacesMap
 import com.hugo.evaluation.view.service.LocationService
 
-class MapLocation(var mapPrecenter: InterfacesMap.MapPrecenter, var activity: FragmentActivity): InterfacesMap.MapModelo {
+class MapLocation(var mapPrecenter: InterfacesMap.MapPrecenter, var activity: FragmentActivity): InterfacesMap.MapModeloLocation {
 
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var locationRequest: LocationRequest

@@ -41,92 +41,27 @@ class MapFragment : Fragment(R.layout.fragment_map), InterfacesMap.MapView , OnM
 
     private lateinit var mapPresenter: InterfacesMap.MapPrecenter
     private lateinit var binding: FragmentMapBinding
-
-
-    private var PERMISION_MAP = 1101
     private lateinit var mMap: GoogleMap
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentMapBinding.bind(view)
         mapPresenter = MapPresenter(this,requireActivity())
-
-
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
-
-
         binding.btBuscar.setOnClickListener{
-            getLastLocation()
-            //generateNotification("Local","Local")
-        }
-    }
-
-
-
-//    fun getRemoteView(title: String, msg: String): RemoteViews {
-//        val remoteView = RemoteViews("com.hugo.evaluation",R.layout.item_messaging)
-//        remoteView.setTextViewText(R.id.tvTitleMessaging,title)
-//        remoteView.setTextViewText(R.id.tvMessaging,msg)
-//        remoteView.setImageViewResource(R.id.ivImagenMessaging,R.drawable.icon_map)
-//
-//        return remoteView
-//    }
-//
-//    fun generateNotification(title: String, msg:String){
-//        val intent = Intent(requireActivity(), HomeActivity::class.java)
-//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-//        val pIntent = PendingIntent.getActivity(requireActivity(),0,intent,PendingIntent.FLAG_ONE_SHOT)
-//
-//        var  builder: NotificationCompat.Builder = NotificationCompat.Builder(requireActivity(),channelId)
-//            .setSmallIcon(R.drawable.icon_map)
-//            .setAutoCancel(true)
-//            .setVibrate(longArrayOf(1000,1000,1000,1000))
-//            .setOnlyAlertOnce(true)
-//            .setContentIntent(pIntent)
-//
-//        builder = builder.setContent(getRemoteView(title,msg))
-//        val notificationManager = requireActivity().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-//
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-//            val notificationChannel = NotificationChannel(channelId, Channelname, NotificationManager.IMPORTANCE_HIGH)
-//            notificationManager.createNotificationChannel(notificationChannel)
-//        }
-//        notificationManager.notify(0,builder.build())
-//
-//    }
-
-    @SuppressLint("MissingPermission")
-    private fun getLastLocation(){
-        if(checkPermision()){
-            if (isLocationEnable()){
-                getLocation()
-            }else{
-                Toast.makeText(this.context,"Activa tu servicio de Ubicacion por Favor", Toast.LENGTH_LONG).show()
-            }
-
-        }else{
-            requestPermission()
-        }
-    }
-
-
-    private val locationCallback = object : LocationCallback() {
-        override fun onLocationResult(p0: LocationResult) {
-            var lastLocation: Location = p0.lastLocation
-            binding.tvUbicacion.text = "Lat: ${lastLocation.latitude} log ${lastLocation.longitude} \n Ciudad: " + getCityName(lastLocation.latitude, lastLocation.longitude) + ", pais"+ getcountryName(lastLocation.latitude,lastLocation.longitude)
-            //mMap.mapType(GoogleMap.MAP_TYPE_NORMAL)
-
-            ContextCompat.startForegroundService(requireActivity(),
-                Intent(requireActivity(), LocationService::class.java))
+            getPermision()
         }
     }
 
     @SuppressLint("MissingPermission")
     override fun onMapReady(googleMap: GoogleMap) {
-        mMap = googleMap
-        if(checkPermision()) {
+        try {
+            mMap = googleMap
             mMap!!.isMyLocationEnabled = true;
+
+        }catch (e: Exception){
+
         }
     }
 
@@ -135,40 +70,12 @@ class MapFragment : Fragment(R.layout.fragment_map), InterfacesMap.MapView , OnM
         fun newInstance() = MapFragment()
     }
 
-
-    private fun checkPermision():Boolean{
-        if(ActivityCompat
-                .checkSelfPermission(requireActivity(),android.Manifest.permission.ACCESS_FINE_LOCATION) ==
-            PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(requireActivity(),
-                Manifest.permission.ACCESS_COARSE_LOCATION)
-            == PackageManager.PERMISSION_GRANTED){
-            return true
-
-        }
-        return false
-    }
-
-    private fun requestPermission(){
-        ActivityCompat.requestPermissions(
-            requireActivity(),
-            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
-            PERMISION_MAP
-        )
-    }
-
-    private fun isLocationEnable():Boolean{
-        val locationManager = this.context?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
-            LocationManager.NETWORK_PROVIDER)
-    }
-
     private fun getCityName(lat:Double,long: Double):String{
         var cityName = ""
         var geoCoder = Geocoder(this.context, Locale.getDefault())
         var adress = geoCoder.getFromLocation(lat,long,1)
         cityName = adress.get(0).locality
         return cityName
-
     }
 
     private fun getcountryName(lat:Double,long: Double):String{
@@ -186,7 +93,6 @@ class MapFragment : Fragment(R.layout.fragment_map), InterfacesMap.MapView , OnM
 
     override fun onLocationChanged(location: Location) {
         Log.d("TAG", String.format("Nueva ubicación: (%s, %s)",location?.getLatitude(), location?.getLongitude()));
-
     }
 
     override fun getLocation() {
@@ -197,5 +103,19 @@ class MapFragment : Fragment(R.layout.fragment_map), InterfacesMap.MapView , OnM
         var cameraUpdate: CameraUpdate = CameraUpdateFactory.newLatLngZoom(LatLng(location.latitude,location.longitude),18F)
         mMap!!.moveCamera(cameraUpdate)
         mMap!!.mapType = GoogleMap.MAP_TYPE_NORMAL
+    }
+
+    override fun getPermision() {
+        mapPresenter.getPermision()
+    }
+
+    override fun confirmPermision(permision: Boolean) {
+        if(permision){
+            getLocation()
+        }
+    }
+
+    override fun showError(messenger: String) {
+        Toast.makeText(this.context,messenger, Toast.LENGTH_LONG).show()
     }
 }

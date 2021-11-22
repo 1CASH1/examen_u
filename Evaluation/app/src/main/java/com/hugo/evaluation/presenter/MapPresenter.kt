@@ -16,4 +16,16 @@ class MapPresenter(var mapView: InterfacesMap.MapView, activity: FragmentActivit
     override fun showLocatio(location: Location) {
         mapView.showLocatio(location)
     }
+
+    override fun getPermision() {
+        mapIterator.getPermision()
+    }
+
+    override fun confirmPermision(permision: Boolean) {
+        mapView.confirmPermision(permision)
+    }
+
+    override fun showError(messenger: String) {
+        mapView.showError(messenger)
+    }
 }
