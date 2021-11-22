@@ -62,6 +62,10 @@ class LocationService  : Service() {
 
                                 }
                                 .addOnFailureListener {
+                                    try {
+                                        generateNotification("Envio de Cordenadas",ll.latitude.toString(),ll.longitude.toString())
+
+                                    }catch (e: Exception){}
 
 
                                 }
